@@ -458,13 +458,14 @@
 <script>
 const TIERS = ['vegan','vegetarian','fish','meat'];
 const TIER_LABELS = {vegan:'Vegan', vegetarian:'Vegetarian', fish:'Fish', meat:'Meat'};
+const TIER_BUTTON_LABELS = {vegan:'Vegan', vegetarian:'Veg', fish:'Fish', meat:'Meat'};
 const MEAL_ICONS = ['☉','◐','☽','✦','✧','◆'];
 
 const DEFAULT_SETTINGS = {
   defaultTier: 'vegetarian',
-  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  timezone: 'Asia/Hong_Kong',
   mealsPerDay: 3,
-  slotTimes: ['08:00','13:00','19:00','20:30','21:30','22:00'],
+  slotTimes: ['07:00','12:00','19:00','20:30','21:30','22:00'],
   slotNames: ['Breakfast','Lunch','Dinner','Snack','Snack','Snack'],
   includeFish: false,
 };
@@ -608,7 +609,7 @@ function renderCatchup(){
     TIERS.forEach(tier=>{
       const btn = document.createElement('button');
       btn.className = 'tier-btn';
-      btn.textContent = TIER_LABELS[tier];
+      btn.textContent = TIER_BUTTON_LABELS[tier];
       btn.addEventListener('click', ()=>{
         if(!log[yKey]) log[yKey] = {};
         log[yKey][i] = tier;
@@ -692,10 +693,17 @@ function render(){
   const subEl = document.getElementById('indexSub');
   if(loggedCount===0){
     idxEl.textContent = '—';
+    idxEl.style.color = '';
     subEl.textContent = `${todayLoggedCount} of ${numSlots} meals logged today`;
   }else{
     const pct = Math.round((fleshFreeCount/loggedCount)*100);
     idxEl.textContent = pct + '%';
+    let color;
+    if(pct >= 95) color = 'var(--ink)';
+    else if(pct >= 90) color = 'var(--sage-deep)';
+    else if(pct >= 75) color = '#7FA8C9';
+    else color = 'var(--terracotta)';
+    idxEl.style.color = color;
     subEl.textContent = `${todayLoggedCount} of ${numSlots} meals logged today`;
   }
 
@@ -748,7 +756,7 @@ function render(){
       TIERS.forEach(tier=>{
         const btn = document.createElement('button');
         btn.className = 'tier-btn' + (loggedTier===tier ? ` selected ${tier}` : '');
-        btn.textContent = TIER_LABELS[tier];
+        btn.textContent = TIER_BUTTON_LABELS[tier];
         btn.addEventListener('click', ()=>{
           if(!log[todayKey]) log[todayKey] = {};
           if(log[todayKey][i] === tier){
