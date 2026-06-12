@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Phoebe</title>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<meta name="theme-color" content="#FAF7F2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF7F2;
+    --ink:#2F4A3D;
+    --sage:#D8E5DC;
+    --sage-deep:#A9C2B2;
+    --clay:#8A9B8E;
+    --terracotta:#C97B5A;
+    --line:rgba(47,74,61,0.12);
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;
+    max-width:420px;
+    min-height:100vh;
+    padding:28px 20px 40px;
+    display:flex;
+    flex-direction:column;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:6px;
+  }
+  .brand{
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:0.01em;
+  }
+  .tz{
+    font-size:12px;
+    color:var(--clay);
+    display:flex;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:0;
+    font-family:inherit;
+  }
+  .date{
+    font-size:13px;
+    color:var(--clay);
+    margin-bottom:28px;
+  }
+
+  /* Hero */
+  .hero{
+    text-align:center;
+    margin-bottom:32px;
+  }
+  .hero-label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--clay);
+    margin:0 0 10px;
+  }
+  .hero-number{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:64px;
+    line-height:1;
+    margin:0;
+    font-variation-settings:'opsz' 144;
+  }
+  .hero-sub{
+    font-size:13px;
+    color:var(--clay);
+    margin:8px 0 0;
+  }
+
+  /* Meal list */
+  .section-label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--clay);
+    margin:0 0 12px;
+  }
+  .meals{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:28px;
+  }
+  .meal{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    transition:border-color 0.15s ease;
+  }
+  .meal.active{
+    border-color:var(--sage-deep);
+  }
+  .meal-top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .meal-icon{
+    width:36px;height:36px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    font-size:17px;
+    background:var(--paper);
+    color:var(--clay);
+    transition:background 0.2s, color 0.2s;
+  }
+  .meal-icon.logged{
+    background:var(--sage);
+    color:var(--ink);
+  }
+  .meal-info{flex:1;}
+  .meal-name{
+    font-size:15px;font-weight:500;margin:0;
+  }
+  .meal-meta{
+    font-size:12px;color:var(--clay);margin:2px 0 0;
+  }
+  .meal-check{
+    font-size:16px;
+    color:var(--ink);
+  }
+  .meal-check.hidden{visibility:hidden;}
+
+  .tiers{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:6px;
+    margin-top:12px;
+  }
+  .tier-btn{
+    font-family:inherit;
+    font-size:12px;
+    font-weight:500;
+    padding:8px 0;
+    border-radius:9px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    cursor:pointer;
+    transition:background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .tier-btn:hover{border-color:var(--sage-deep);}
+  .tier-btn.selected{
+    background:var(--sage);
+    border-color:var(--sage-deep);
+  }
+  .tier-btn.selected.meat{
+    background:#F3E2DA;
+    border-color:var(--terracotta);
+    color:#8A4A30;
+  }
+  .tier-btn.selected.fish{
+    background:#E4EEF5;
+    border-color:#7FA8C9;
+    color:#3E6E92;
+  }
+
+  /* Catch-up prompt */
+  .catchup{
+    background:var(--card);
+    border:1px solid var(--sage-deep);
+    border-radius:14px;
+    padding:14px 16px;
+    margin-bottom:20px;
+  }
+  .catchup-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:4px;
+  }
+  .catchup-text{
+    font-size:13px;
+    line-height:1.5;
+  }
+  .catchup-text strong{font-weight:500;}
+  .catchup-dismiss{
+    background:none;border:none;cursor:pointer;
+    color:var(--clay);
+    font-size:16px;
+    padding:0;
+    line-height:1;
+    flex-shrink:0;
+  }
+  .catchup-dismiss:hover{color:var(--ink);}
+
+  /* Week beads */
+  .week{
+    border-top:1px solid var(--line);
+    padding-top:20px;
+    margin-bottom:24px;
+  }
+  .beads{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:12px;
+  }
+  .bead{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:var(--line);
+    flex-shrink:0;
+  }
+  .bead.vegan{background:var(--ink);}
+  .bead.vegetarian{background:var(--sage-deep);}
+  .bead.fish{background:#7FA8C9;}
+  .bead.meat{background:var(--terracotta);}
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    font-size:11px;
+    color:var(--clay);
+  }
+  .legend span{display:flex;align-items:center;gap:5px;}
+  .legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  /* Footer */
+  footer{
+    margin-top:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-top:16px;
+    font-size:12px;
+    color:var(--clay);
+  }
+  .settings-btn{
+    background:none;border:none;cursor:pointer;
+    color:var(--clay);
+    font-size:18px;
+    display:flex;align-items:center;
+    padding:4px;
+    transition:color 0.15s;
+  }
+  .settings-btn:hover{color:var(--ink);}
+
+  /* Settings panel */
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(47,74,61,0.35);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    z-index:50;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s ease;
+  }
+  .overlay.open{opacity:1;pointer-events:auto;}
+  .sheet{
+    background:var(--paper);
+    width:100%;
+    max-width:420px;
+    border-radius:20px 20px 0 0;
+    padding:24px 20px 32px;
+    max-height:85vh;
+    overflow-y:auto;
+    transform:translateY(24px);
+    transition:transform 0.2s ease;
+  }
+  .overlay.open .sheet{transform:translateY(0);}
+  .sheet-title{
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    font-weight:600;
+    margin:0 0 20px;
+  }
+  .field{
+    margin-bottom:18px;
+  }
+  .field-label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--clay);
+    margin:0 0 8px;
+  }
+  select, input[type="time"], input[type="number"]{
+    width:100%;
+    font-family:inherit;
+    font-size:14px;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--card);
+    color:var(--ink);
+  }
+  .time-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+    gap:12px;
+  }
+  .time-row span{font-size:14px;flex:1;}
+  .time-row input{width:120px;}
+  .checkbox-row{
+    display:flex;align-items:center;gap:8px;
+    font-size:14px;margin-bottom:8px;
+  }
+  .lifetime-note{
+    font-size:13px;color:var(--clay);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:18px;
+  }
+  .danger-btn{
+    width:100%;
+    font-family:inherit;
+    font-size:14px;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid var(--terracotta);
+    background:none;
+    color:var(--terracotta);
+    cursor:pointer;
+    margin-bottom:8px;
+  }
+  .close-btn{
+    width:100%;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:500;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+  }
+  :focus-visible{outline:2px solid var(--sage-deep); outline-offset:2px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">Phoebe</div>
+    <button class="tz" id="tzDisplay" aria-label="Open settings to change timezone"></button>
+  </header>
+  <div class="date" id="dateDisplay"></div>
+
+  <div class="hero">
+    <p class="hero-label">Flesh-free index</p>
+    <p class="hero-number" id="indexNumber">—</p>
+    <p class="hero-sub" id="indexSub"></p>
+  </div>
+
+  <div id="catchupContainer"></div>
+
+  <p class="section-label">Today</p>
+  <div class="meals" id="mealsList"></div>
+
+  <div class="week">
+    <p class="section-label">Last 7 days</p>
+    <div class="beads" id="beads"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--ink)"></i>Vegan</span>
+      <span><i class="dot" style="background:var(--sage-deep)"></i>Vegetarian</span>
+      <span><i class="dot" style="background:#7FA8C9"></i>Fish</span>
+      <span><i class="dot" style="background:var(--terracotta)"></i>Meat</span>
+    </div>
+  </div>
+
+  <footer>
+    <span id="lifetimeCount"></span>
+    <button class="settings-btn" id="openSettings" aria-label="Open settings">⚙</button>
+  </footer>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <p class="sheet-title">Settings</p>
+
+    <div class="field">
+      <p class="field-label">Default tier</p>
+      <select id="defaultTier">
+        <option value="meat">Meat</option>
+        <option value="fish">Fish</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="vegan">Vegan</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <p class="field-label">Timezone</p>
+      <select id="timezone"></select>
+    </div>
+
+    <div class="field">
+      <p class="field-label">Meals per day</p>
+      <input type="number" id="mealsPerDay" min="1" max="6" value="3">
+    </div>
+
+    <div class="field" id="slotTimesField">
+      <p class="field-label">Meal slot times</p>
+      <div id="slotTimes"></div>
+    </div>
+
+    <div class="field">
+      <p class="field-label">Flesh-free index includes</p>
+      <div class="checkbox-row"><input type="checkbox" checked disabled> Vegan</div>
+      <div class="checkbox-row"><input type="checkbox" checked disabled> Vegetarian</div>
+      <div class="checkbox-row"><input type="checkbox" id="includeFish"> Fish</div>
+    </div>
+
+    <div class="lifetime-note" id="lifetimeNote"></div>
+
+    <button class="danger-btn" id="resetBtn">Reset all data</button>
+    <button class="close-btn" id="closeSettings">Done</button>
+  </div>
+</div>
+
+<script>
+const TIERS = ['vegan','vegetarian','fish','meat'];
+const TIER_LABELS = {vegan:'Vegan', vegetarian:'Vegetarian', fish:'Fish', meat:'Meat'};
+const MEAL_ICONS = ['☉','◐','☽','✦','✧','◆'];
+
+const DEFAULT_SETTINGS = {
+  defaultTier: 'vegetarian',
+  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  mealsPerDay: 3,
+  slotTimes: ['08:00','13:00','19:00','20:30','21:30','22:00'],
+  slotNames: ['Breakfast','Lunch','Dinner','Snack','Snack','Snack'],
+  includeFish: false,
+};
+
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem('phoebe_settings');
+    if(raw) return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(raw));
+  }catch(e){}
+  return Object.assign({}, DEFAULT_SETTINGS);
+}
+function saveSettings(s){
+  localStorage.setItem('phoebe_settings', JSON.stringify(s));
+}
+function loadLog(){
+  try{
+    const raw = localStorage.getItem('phoebe_log');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {};
+}
+function saveLog(l){
+  localStorage.setItem('phoebe_log', JSON.stringify(l));
+}
+
+let settings = loadSettings();
+let log = loadLog(); // { 'YYYY-MM-DD': { 0: 'vegan', 1: 'fish', ... } }
+
+function getTodayKey(){
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: settings.timezone,
+    year:'numeric', month:'2-digit', day:'2-digit'
+  }).formatToParts(now);
+  const get = t => parts.find(p=>p.type===t).value;
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
+function getYesterdayKey(){
+  const now = new Date();
+  now.setDate(now.getDate()-1);
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: settings.timezone,
+    year:'numeric', month:'2-digit', day:'2-digit'
+  }).formatToParts(now);
+  const get = t => parts.find(p=>p.type===t).value;
+  return `${get('year')}-${get('month')}-${get('day')}`;
+}
+
+function loadDismissed(){
+  try{
+    const raw = localStorage.getItem('phoebe_dismissed');
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {};
+}
+function saveDismissed(d){
+  localStorage.setItem('phoebe_dismissed', JSON.stringify(d));
+}
+let dismissed = loadDismissed();
+
+function getCurrentLocalTime(){
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: settings.timezone,
+    hour:'2-digit', minute:'2-digit', hour12:false
+  }).formatToParts(now);
+  const h = parts.find(p=>p.type==='hour').value;
+  const m = parts.find(p=>p.type==='minute').value;
+  return `${h}:${m}`;
+}
+
+function dateKeysForLastNDays(n){
+  const keys = [];
+  const now = new Date();
+  for(let i=n-1;i>=0;i--){
+    const d = new Date(now);
+    d.setDate(d.getDate()-i);
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: settings.timezone,
+      year:'numeric', month:'2-digit', day:'2-digit'
+    }).formatToParts(d);
+    const get = t => parts.find(p=>p.type===t).value;
+    keys.push(`${get('year')}-${get('month')}-${get('day')}`);
+  }
+  return keys;
+}
+
+function isFleshFree(tier){
+  if(tier==='vegan' || tier==='vegetarian') return true;
+  if(tier==='fish') return settings.includeFish;
+  return false;
+}
+
+function renderCatchup(){
+  const container = document.getElementById('catchupContainer');
+  container.innerHTML = '';
+
+  const yKey = getYesterdayKey();
+  if(dismissed[yKey]) return; // already dismissed
+
+  const yLog = log[yKey] || {};
+  const missing = [];
+  for(let i=0;i<settings.mealsPerDay;i++){
+    if(!yLog[i]) missing.push(i);
+  }
+  if(missing.length === 0) return;
+
+  missing.forEach(i=>{
+    const slotName = settings.slotNames[i] || `Meal ${i+1}`;
+
+    const card = document.createElement('div');
+    card.className = 'catchup';
+
+    const top = document.createElement('div');
+    top.className = 'catchup-top';
+
+    const text = document.createElement('div');
+    text.className = 'catchup-text';
+    text.innerHTML = `Forgot to log yesterday's <strong>${slotName}</strong>?`;
+
+    const dismiss = document.createElement('button');
+    dismiss.className = 'catchup-dismiss';
+    dismiss.textContent = '✕';
+    dismiss.setAttribute('aria-label','Dismiss');
+    dismiss.addEventListener('click', ()=>{
+      card.remove();
+      // if all cards dismissed/removed, mark day as dismissed
+      if(container.children.length === 0){
+        dismissed[yKey] = true;
+        saveDismissed(dismissed);
+      }
+    });
+
+    top.appendChild(text);
+    top.appendChild(dismiss);
+    card.appendChild(top);
+
+    const tiers = document.createElement('div');
+    tiers.className = 'tiers';
+    TIERS.forEach(tier=>{
+      const btn = document.createElement('button');
+      btn.className = 'tier-btn';
+      btn.textContent = TIER_LABELS[tier];
+      btn.addEventListener('click', ()=>{
+        if(!log[yKey]) log[yKey] = {};
+        log[yKey][i] = tier;
+        saveLog(log);
+        card.remove();
+        if(container.children.length === 0){
+          dismissed[yKey] = true;
+          saveDismissed(dismissed);
+        }
+        renderBeadsAndLifetime();
+      });
+      tiers.appendChild(btn);
+    });
+    card.appendChild(tiers);
+
+    container.appendChild(card);
+  });
+}
+
+function renderBeadsAndLifetime(){
+  const numSlots = settings.mealsPerDay;
+
+  // week beads
+  const beadsEl = document.getElementById('beads');
+  beadsEl.innerHTML = '';
+  const last7 = dateKeysForLastNDays(7);
+  last7.forEach(dayKey=>{
+    const dayLog = log[dayKey] || {};
+    for(let i=0;i<numSlots;i++){
+      const bead = document.createElement('div');
+      const tier = dayLog[i];
+      bead.className = 'bead' + (tier ? ` ${tier}` : '');
+      beadsEl.appendChild(bead);
+    }
+  });
+
+  // lifetime count
+  let total = 0;
+  Object.values(log).forEach(day=>{
+    total += Object.keys(day).length;
+  });
+  document.getElementById('lifetimeCount').textContent = total === 1 ? '1 meal tracked' : `${total} meals tracked`;
+
+  // lifetime note in settings
+  const firstDate = Object.keys(log).sort()[0];
+  document.getElementById('lifetimeNote').textContent = firstDate
+    ? `${total} meals logged since ${new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'long',year:'numeric'}).format(new Date(firstDate))}`
+    : 'No meals logged yet';
+}
+
+function render(){
+  const todayKey = getTodayKey();
+  const todayLog = log[todayKey] || {};
+  const currentTime = getCurrentLocalTime();
+  const numSlots = settings.mealsPerDay;
+
+  // timezone display
+  const tzShort = settings.timezone.split('/').pop().replace('_',' ');
+  document.getElementById('tzDisplay').innerHTML = `${tzShort} <span style="opacity:0.6">▾</span>`;
+
+  // date display
+  document.getElementById('dateDisplay').textContent = new Intl.DateTimeFormat('en-GB', {
+    timeZone: settings.timezone, weekday:'long', day:'numeric', month:'long'
+  }).format(new Date());
+
+  // index calculation - all time
+  let loggedCount = 0, fleshFreeCount = 0;
+  Object.values(log).forEach(day=>{
+    Object.values(day).forEach(tier=>{
+      loggedCount++;
+      if(isFleshFree(tier)) fleshFreeCount++;
+    });
+  });
+
+  let todayLoggedCount = 0;
+  for(let i=0;i<numSlots;i++){
+    if(todayLog[i]) todayLoggedCount++;
+  }
+
+  const idxEl = document.getElementById('indexNumber');
+  const subEl = document.getElementById('indexSub');
+  if(loggedCount===0){
+    idxEl.textContent = '—';
+    subEl.textContent = `${todayLoggedCount} of ${numSlots} meals logged today`;
+  }else{
+    const pct = Math.round((fleshFreeCount/loggedCount)*100);
+    idxEl.textContent = pct + '%';
+    subEl.textContent = `${todayLoggedCount} of ${numSlots} meals logged today`;
+  }
+
+  // meal list
+  const mealsList = document.getElementById('mealsList');
+  mealsList.innerHTML = '';
+  for(let i=0;i<numSlots;i++){
+    const slotTime = settings.slotTimes[i] || '—';
+    const slotName = settings.slotNames[i] || `Meal ${i+1}`;
+    const loggedTier = todayLog[i];
+    const isPast = currentTime >= slotTime;
+    const isActive = !loggedTier && isPast;
+
+    const meal = document.createElement('div');
+    meal.className = 'meal' + (isActive ? ' active' : '');
+
+    const top = document.createElement('div');
+    top.className = 'meal-top';
+
+    const icon = document.createElement('div');
+    icon.className = 'meal-icon' + (loggedTier ? ' logged' : '');
+    icon.textContent = MEAL_ICONS[i % MEAL_ICONS.length];
+
+    const info = document.createElement('div');
+    info.className = 'meal-info';
+    const name = document.createElement('p');
+    name.className = 'meal-name';
+    name.textContent = slotName;
+    const meta = document.createElement('p');
+    meta.className = 'meal-meta';
+    meta.textContent = loggedTier
+      ? `${slotTime} · ${TIER_LABELS[loggedTier]}`
+      : (isPast ? `${slotTime} · not logged` : `${slotTime} · upcoming`);
+    info.appendChild(name);
+    info.appendChild(meta);
+
+    const check = document.createElement('div');
+    check.className = 'meal-check' + (loggedTier ? '' : ' hidden');
+    check.textContent = '✓';
+
+    top.appendChild(icon);
+    top.appendChild(info);
+    top.appendChild(check);
+    meal.appendChild(top);
+
+    // tier buttons - show if logged (to allow editing) or if active
+    if(isActive || loggedTier){
+      const tiers = document.createElement('div');
+      tiers.className = 'tiers';
+      TIERS.forEach(tier=>{
+        const btn = document.createElement('button');
+        btn.className = 'tier-btn' + (loggedTier===tier ? ` selected ${tier}` : '');
+        btn.textContent = TIER_LABELS[tier];
+        btn.addEventListener('click', ()=>{
+          if(!log[todayKey]) log[todayKey] = {};
+          if(log[todayKey][i] === tier){
+            delete log[todayKey][i]; // tap again to un-log
+          }else{
+            log[todayKey][i] = tier;
+          }
+          saveLog(log);
+          render();
+        });
+        tiers.appendChild(btn);
+      });
+      meal.appendChild(tiers);
+    }
+
+    mealsList.appendChild(meal);
+  }
+
+  renderCatchup();
+  renderBeadsAndLifetime();
+}
+
+// --- Settings panel ---
+const overlay = document.getElementById('overlay');
+const allTimezones = Intl.supportedValuesOf ? Intl.supportedValuesOf('timeZone') : [settings.timezone];
+
+function populateTimezones(){
+  const sel = document.getElementById('timezone');
+  sel.innerHTML = '';
+  allTimezones.forEach(tz=>{
+    const opt = document.createElement('option');
+    opt.value = tz;
+    opt.textContent = tz;
+    if(tz === settings.timezone) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function populateSlotTimes(){
+  const container = document.getElementById('slotTimes');
+  container.innerHTML = '';
+  for(let i=0;i<settings.mealsPerDay;i++){
+    const row = document.createElement('div');
+    row.className = 'time-row';
+    const label = document.createElement('span');
+    label.textContent = settings.slotNames[i] || `Meal ${i+1}`;
+    const input = document.createElement('input');
+    input.type = 'time';
+    input.value = settings.slotTimes[i] || '08:00';
+    input.addEventListener('change', ()=>{
+      settings.slotTimes[i] = input.value;
+      saveSettings(settings);
+      render();
+    });
+    row.appendChild(label);
+    row.appendChild(input);
+    container.appendChild(row);
+  }
+}
+
+function openSettings(){
+  document.getElementById('defaultTier').value = settings.defaultTier;
+  document.getElementById('mealsPerDay').value = settings.mealsPerDay;
+  document.getElementById('includeFish').checked = settings.includeFish;
+  populateTimezones();
+  populateSlotTimes();
+  overlay.classList.add('open');
+}
+function closeSettings(){
+  overlay.classList.remove('open');
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+document.getElementById('tzDisplay').addEventListener('click', openSettings);
+document.getElementById('closeSettings').addEventListener('click', closeSettings);
+overlay.addEventListener('click', e=>{ if(e.target === overlay) closeSettings(); });
+
+document.getElementById('defaultTier').addEventListener('change', e=>{
+  settings.defaultTier = e.target.value;
+  saveSettings(settings);
+});
+document.getElementById('timezone').addEventListener('change', e=>{
+  settings.timezone = e.target.value;
+  saveSettings(settings);
+  render();
+});
+document.getElementById('mealsPerDay').addEventListener('change', e=>{
+  let v = parseInt(e.target.value,10);
+  if(isNaN(v)) v = 3;
+  v = Math.max(1, Math.min(6, v));
+  settings.mealsPerDay = v;
+  saveSettings(settings);
+  populateSlotTimes();
+  render();
+});
+document.getElementById('includeFish').addEventListener('change', e=>{
+  settings.includeFish = e.target.checked;
+  saveSettings(settings);
+  render();
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(confirm('This will permanently delete all logged meals. Continue?')){
+    log = {};
+    saveLog(log);
+    render();
+  }
+});
+
+// refresh periodically so day/time boundary changes are picked up
+setInterval(render, 60000);
+
+render();
+</script>
+</body>
+</html>
